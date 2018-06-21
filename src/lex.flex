@@ -21,6 +21,8 @@ number = [0-9]*
 // operator = "+" | "-" | "/" | "*"
 blank = "\n" | "\r" | " " | "\t"
 alpha = [a-zA-Z]
+line = ^!.*
+word = {alpha}*
 
 %state COMMENT
 
@@ -33,10 +35,12 @@ alpha = [a-zA-Z]
     "-"             {return new Token(Symbol.NEG);}
     ","             {return new Token(Symbol.COMMA);}
     ";"             {return new Token(Symbol.SEMICOLON);}
+    " 0"            {return new Token(Symbol.ZERO);}
+    {word}          {return new Token(Symbol.WORD);}
     {number}        {return new IntToken(Integer.parseInt(yytext()));}
     {blank}         {}
 }
 <COMMENT> {
-    "\n"            {yybegin(YYINITIAL);}
+    {line}            {return new Token(Symbol.LINE);yybegin(YYINITIAL);}
 }
 [^]             {throw new LexerException();}
